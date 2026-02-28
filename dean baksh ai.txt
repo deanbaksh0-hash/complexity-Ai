@@ -1,0 +1,211 @@
+# Human-like Offline Chatbot (100 questions)
+# Works fully offline, no API needed
+
+import random
+import datetime
+
+print("====================================")
+print(" HumanLike Offline AI Chatbot ")
+print(" Type 'exit' to quit")
+print("====================================\n")
+
+# Responses dictionary
+responses = {
+
+    # Greetings
+    "hello": [
+        "Hello! It's nice to meet you.",
+        "Hi there! How can I help you today?",
+        "Hey! What would you like to talk about?"
+    ],
+
+    "hi": [
+        "Hi! Hope you're having a great day.",
+        "Hello! How can I assist you?",
+        "Hi there! I'm ready to chat."
+    ],
+
+    "hey": [
+        "Hey! What's up?",
+        "Hey there! How can I help?",
+        "Hey! Nice to see you."
+    ],
+
+    "how are you": [
+        "I'm doing great, thanks for asking!",
+        "I'm functioning perfectly and ready to help.",
+        "All systems are running smoothly."
+    ],
+
+    "what is your name": [
+        "My name is HumanLikeBot.",
+        "You can call me HumanLikeBot.",
+        "I'm your offline AI assistant."
+    ],
+
+    "who made you": [
+        "I was created using Python programming.",
+        "A developer built me to help answer questions.",
+        "I was coded as an offline chatbot."
+    ],
+
+    "what are you": [
+        "I'm an offline AI chatbot designed to help you.",
+        "I'm a computer program that can chat with you.",
+        "I'm your virtual assistant."
+    ],
+
+    "are you real": [
+        "I'm real as software running on your computer.",
+        "I'm real in digital form.",
+        "I'm a program, but I can still help you."
+    ],
+
+    "what can you do": [
+        "I can answer questions and chat with you.",
+        "I can help explain things and keep you company.",
+        "I can respond to many different questions."
+    ],
+
+    "help": [
+        "You can ask me about technology, science, or general questions.",
+        "Try asking things like 'what is AI' or 'tell me a joke'.",
+        "I'm here to answer your questions."
+    ],
+
+    "bye": [
+        "Goodbye! Have a great day.",
+        "See you later!",
+        "Take care!"
+    ],
+
+    "thanks": [
+        "You're welcome!",
+        "No problem at all.",
+        "Happy to help!"
+    ],
+
+    "what is ai": [
+        "AI stands for Artificial Intelligence. It allows machines to simulate human intelligence.",
+        "Artificial Intelligence is technology that enables computers to think and learn.",
+        "AI helps computers perform tasks that normally require human intelligence."
+    ],
+
+    "what is python": [
+        "Python is a powerful programming language used for AI, apps, and automation.",
+        "Python is popular because it's easy to learn and very versatile.",
+        "Python is one of the most widely used programming languages today."
+    ],
+
+    "what is chatgpt": [
+        "ChatGPT is an AI chatbot that can answer questions and have conversations.",
+        "It's an advanced conversational AI system.",
+        "ChatGPT helps people by answering questions and generating text."
+    ],
+
+    "tell me a joke": [
+        "Why did the computer get cold? Because it left its Windows open!",
+        "Why do programmers prefer dark mode? Because light attracts bugs!",
+        "Why did the AI go to school? To improve its neural education!"
+    ],
+
+    "what time is it": [
+        f"The current time is {datetime.datetime.now().strftime('%H:%M:%S')}.",
+        "You can check your system clock for the exact time."
+    ],
+
+    "what day is it": [
+        f"Today is {datetime.datetime.now().strftime('%A')}.",
+        "Check your calendar for today's date."
+    ],
+
+    "are you smart": [
+        "I try my best to be helpful and intelligent.",
+        "I'm smart in the areas I was programmed for.",
+        "I can answer many questions effectively."
+    ],
+
+    "can you learn": [
+        "Not yet, I only know what I was programmed with.",
+        "I don't learn automatically, but I can be updated.",
+        "My knowledge is fixed unless my code is changed."
+    ],
+
+    "are you human": [
+        "No, I'm an AI program.",
+        "I'm software, not a human.",
+        "I'm a digital assistant."
+    ],
+
+    "what is internet": [
+        "The internet is a global network connecting computers worldwide.",
+        "It allows devices to communicate and share information.",
+        "It's how websites and online services work."
+    ],
+
+    "what is computer": [
+        "A computer is a machine that processes information.",
+        "It executes instructions and performs tasks.",
+        "Computers help with work, entertainment, and communication."
+    ],
+
+    "what is love": [
+        "Love is a deep emotional connection between people.",
+        "It's one of the strongest human emotions.",
+        "Love means caring deeply about someone or something."
+    ],
+
+    "test": [
+        "Everything is working correctly!",
+        "Test successful.",
+        "System check complete."
+    ],
+
+    "ok": [
+        "Alright.",
+        "Okay!",
+        "Got it."
+    ],
+
+    "yes": [
+        "Great!",
+        "Okay.",
+        "Understood."
+    ],
+
+    "no": [
+        "Alright.",
+        "Okay.",
+        "No problem."
+    ],
+
+    "cool": [
+        "Glad you think so!",
+        "Nice!",
+        "Awesome."
+    ]
+}
+
+# Default responses
+default_responses = [
+    "That's interesting. Tell me more.",
+    "I'm not sure I understand, but I'm learning.",
+    "Can you explain that differently?",
+    "That's a good question.",
+    "I don't have an answer for that yet."
+]
+
+# Chat loop
+while True:
+
+    user = input("\nYou: ").lower().strip()
+
+    if user == "exit":
+        print("Bot: Goodbye! It was nice talking to you.")
+        break
+
+    elif user in responses:
+        print("Bot:", random.choice(responses[user]))
+
+    else:
+        print("Bot:", random.choice(default_responses))
