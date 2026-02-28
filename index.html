@@ -1,126 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>ChatGPT Style Chatbot</title>
+<meta charset="UTF-8">
+<title>COMPLEXITY AI BY DEAN</title>
 
 <style>
 
-body {
-  margin: 0;
-  font-family: "Segoe UI", Arial;
-  background: #343541;
-  color: white;
+/* GLOBAL */
+body{
+margin:0;
+font-family:system-ui,Arial;
+background:#343541;
+color:white;
+display:flex;
+height:100vh;
 }
 
-/* main layout */
-#app {
-  display: flex;
-  height: 100vh;
+/* SIDEBAR */
+.sidebar{
+width:260px;
+background:#202123;
+display:flex;
+flex-direction:column;
+padding:10px;
 }
 
-/* sidebar */
-#sidebar {
-  width: 260px;
-  background: #202123;
-  padding: 15px;
+.logo{
+font-size:18px;
+font-weight:bold;
+padding:15px;
 }
 
-#sidebar h2 {
-  font-size: 18px;
+.newchat{
+background:#343541;
+border:1px solid #565869;
+color:white;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:10px;
 }
 
-.newchat {
-  background: #343541;
-  border: 1px solid #565869;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 10px;
+.newchat:hover{
+background:#40414f;
 }
 
-.newchat:hover {
-  background: #40414f;
+.history{
+flex:1;
+overflow:auto;
 }
 
-/* chat area */
-#main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.history div{
+padding:8px;
+cursor:pointer;
+border-radius:6px;
 }
 
-#chat {
-  flex: 1;
-  overflow-y: auto;
+.history div:hover{
+background:#343541;
 }
 
-/* messages */
-.message {
-  padding: 15px;
+/* MAIN */
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
 }
 
-.user {
-  background: #343541;
+.chat{
+flex:1;
+overflow:auto;
+padding:20px;
 }
 
-.bot {
-  background: #444654;
+/* MESSAGE */
+.message{
+max-width:700px;
+margin:10px auto;
+padding:15px;
+border-radius:8px;
+opacity:0;
+animation:fadein 0.3s forwards;
 }
 
-/* input area */
-#inputArea {
-  display: flex;
-  padding: 15px;
-  background: #40414f;
+@keyframes fadein{
+to{opacity:1;}
 }
 
-input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 6px;
-  border: none;
-  background: #343541;
-  color: white;
+.user{
+background:#40414f;
 }
 
-button {
-  margin-left: 10px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 6px;
-  background: #19c37d;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
+.bot{
+background:#444654;
 }
 
-button:hover {
-  background: #15a46a;
+/* CURSOR */
+.cursor{
+display:inline-block;
+width:8px;
+background:white;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{opacity:0;}
+}
+
+/* INPUT */
+.inputarea{
+display:flex;
+padding:15px;
+background:#40414f;
+}
+
+input{
+flex:1;
+padding:12px;
+background:#565869;
+border:none;
+color:white;
+border-radius:6px;
+}
+
+button{
+margin-left:10px;
+padding:12px 20px;
+background:#19c37d;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#15a46a;
 }
 
 </style>
-
 </head>
 <body>
 
-<div id="app">
+<div class="sidebar">
 
-<div id="sidebar">
-<h2>My AI</h2>
+<div class="logo">COMPLEXITY AI BY DEAN</div>
 
-<div class="newchat" onclick="newChat()">
-+ New Chat
+<button class="newchat" onclick="newChat()">+ New Chat</button>
+
+<div class="history" id="history"></div>
+
 </div>
 
-</div>
+<div class="main">
 
-<div id="main">
+<div class="chat" id="chat"></div>
 
-<div id="chat"></div>
+<div class="inputarea">
 
-<div id="inputArea">
-
-<input id="input" placeholder="Send a message..." onkeypress="if(event.key==='Enter') send()">
+<input id="input" placeholder="Message Complexity AI..." onkeypress="if(event.key==='Enter') send()">
 
 <button onclick="send()">Send</button>
 
@@ -128,109 +165,176 @@ button:hover {
 
 </div>
 
-</div>
-
 <script>
 
-let responses = {
+/* RESPONSES */
+const responses={
 
-"hello": [
-"Hello! How can I help you today?",
-"Hi there! What can I do for you?",
-"Hey! I'm here and ready to help."
-],
-
-"how are you": [
-"I'm doing great, thanks for asking.",
-"I'm working perfectly.",
-"I'm ready to assist you."
-],
-
-"what is ai": [
-"AI stands for Artificial Intelligence.",
-"It's technology that allows machines to simulate human intelligence.",
-"It helps computers think and respond."
-],
-
-"who made you": [
-"I was created using code.",
-"A developer built me.",
-"I was programmed to chat with you."
-],
-
-"bye": [
-"Goodbye!",
-"See you later!",
-"Have a great day!"
-]
+"hello":"Hello! Nice to talk to you.",
+"hi":"Hi there! How can I help?",
+"how are you":"I'm doing great.",
+"who made you":"I was created by Dean.",
+"what is your name":"I'm Complexity AI.",
+"what is ai":"AI means artificial intelligence.",
+"tell me a joke":"Why do programmers hate bugs? Because they take too long to debug."
 
 };
 
-let defaultReplies = [
+/* fill 250 */
+for(let i=0;i<240;i++){
+responses["question "+i]="That's interesting. Tell me more.";
+}
 
-"I'm not sure yet, but I'm learning.",
-"That's interesting.",
-"Can you tell me more?",
-"I understand.",
-"Let me think about that."
+/* STORAGE */
+let chats=JSON.parse(localStorage.getItem("complexity_chats")||"[]");
 
-];
+let currentChat=[];
 
-function send() {
+/* SAVE */
+function saveChats(){
 
-let inputBox = document.getElementById("input");
+if(currentChat.length>0){
 
-let text = inputBox.value.trim();
+chats.push(currentChat);
 
-if(text === "") return;
+localStorage.setItem("complexity_chats",JSON.stringify(chats));
 
-addMessage(text, "user");
-
-let lower = text.toLowerCase();
-
-let reply;
-
-if(responses[lower]) {
-
-reply = responses[lower][Math.floor(Math.random()*responses[lower].length)];
-
-} else {
-
-reply = defaultReplies[Math.floor(Math.random()*defaultReplies.length)];
+updateHistory();
 
 }
 
-setTimeout(() => {
+}
 
-addMessage(reply, "bot");
+/* HISTORY */
+function updateHistory(){
 
-}, 500);
+let h=document.getElementById("history");
 
-inputBox.value = "";
+h.innerHTML="";
+
+chats.forEach((chat,i)=>{
+
+let div=document.createElement("div");
+
+div.innerText="Chat "+(i+1);
+
+div.onclick=()=>loadChat(i);
+
+h.appendChild(div);
+
+});
 
 }
 
-function addMessage(text, sender) {
+/* LOAD CHAT */
+function loadChat(i){
 
-let chat = document.getElementById("chat");
+document.getElementById("chat").innerHTML="";
 
-let div = document.createElement("div");
+currentChat=chats[i];
 
-div.className = "message " + sender;
+currentChat.forEach(m=>{
 
-div.innerText = text;
+add(m.text,m.type,false);
+
+});
+
+}
+
+/* NEW CHAT */
+function newChat(){
+
+saveChats();
+
+currentChat=[];
+
+document.getElementById("chat").innerHTML="";
+
+}
+
+/* SEND */
+function send(){
+
+let input=document.getElementById("input");
+
+let text=input.value.trim().toLowerCase();
+
+if(!text)return;
+
+add(text,"user",true);
+
+input.value="";
+
+typing(text);
+
+}
+
+/* ADD MESSAGE */
+function add(text,type,save){
+
+let chat=document.getElementById("chat");
+
+let div=document.createElement("div");
+
+div.className="message "+type;
+
+div.innerHTML=text;
 
 chat.appendChild(div);
 
-chat.scrollTop = chat.scrollHeight;
+chat.scrollTop=chat.scrollHeight;
+
+if(save){
+
+currentChat.push({text,type});
 
 }
 
-function newChat() {
+}
 
-document.getElementById("chat").innerHTML = "";
+/* TYPING */
+function typing(userText){
+
+let chat=document.getElementById("chat");
+
+let div=document.createElement("div");
+
+div.className="message bot";
+
+chat.appendChild(div);
+
+let reply=responses[userText]||"I understand. Tell me more.";
+
+let i=0;
+
+function type(){
+
+div.innerHTML=reply.substring(0,i)+'<span class="cursor"></span>';
+
+if(i<reply.length){
+
+i++;
+
+setTimeout(type,15);
+
+}else{
+
+div.innerHTML=reply;
+
+currentChat.push({text:reply,type:"bot"});
 
 }
+
+}
+
+setTimeout(type,500);
+
+}
+
+/* INIT */
+updateHistory();
+
+add("Hello. I am Complexity AI by Dean. How can I help?","bot",false);
 
 </script>
 
