@@ -1,61 +1,237 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Offline AI Chatbot</title>
+<title>ChatGPT Style Chatbot</title>
+
 <style>
+
 body {
-    font-family: Arial;
-    background-color: #f0f0f0;
+  margin: 0;
+  font-family: "Segoe UI", Arial;
+  background: #343541;
+  color: white;
 }
-#chatbox {
-    width: 500px;
-    margin: 50px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+
+/* main layout */
+#app {
+  display: flex;
+  height: 100vh;
 }
+
+/* sidebar */
+#sidebar {
+  width: 260px;
+  background: #202123;
+  padding: 15px;
+}
+
+#sidebar h2 {
+  font-size: 18px;
+}
+
+.newchat {
+  background: #343541;
+  border: 1px solid #565869;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.newchat:hover {
+  background: #40414f;
+}
+
+/* chat area */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#chat {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* messages */
+.message {
+  padding: 15px;
+}
+
+.user {
+  background: #343541;
+}
+
+.bot {
+  background: #444654;
+}
+
+/* input area */
+#inputArea {
+  display: flex;
+  padding: 15px;
+  background: #40414f;
+}
+
 input {
-    width: 80%;
-    padding: 10px;
+  flex: 1;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: #343541;
+  color: white;
 }
+
 button {
-    padding: 10px;
+  margin-left: 10px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #19c37d;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
 }
+
+button:hover {
+  background: #15a46a;
+}
+
 </style>
+
 </head>
 <body>
 
-<div id="chatbox">
-<h2>Offline AI Chatbot</h2>
+<div id="app">
+
+<div id="sidebar">
+<h2>My AI</h2>
+
+<div class="newchat" onclick="newChat()">
++ New Chat
+</div>
+
+</div>
+
+<div id="main">
+
 <div id="chat"></div>
 
-<input id="input" type="text" placeholder="Ask something...">
-<button onclick="talk()">Send</button>
+<div id="inputArea">
+
+<input id="input" placeholder="Send a message..." onkeypress="if(event.key==='Enter') send()">
+
+<button onclick="send()">Send</button>
+
+</div>
+
+</div>
+
 </div>
 
 <script>
+
 let responses = {
-"hello": "Hello!",
-"hi": "Hi there!",
-"what is ai": "AI stands for Artificial Intelligence.",
-"what is python": "Python is a programming language.",
-"bye": "Goodbye!"
+
+"hello": [
+"Hello! How can I help you today?",
+"Hi there! What can I do for you?",
+"Hey! I'm here and ready to help."
+],
+
+"how are you": [
+"I'm doing great, thanks for asking.",
+"I'm working perfectly.",
+"I'm ready to assist you."
+],
+
+"what is ai": [
+"AI stands for Artificial Intelligence.",
+"It's technology that allows machines to simulate human intelligence.",
+"It helps computers think and respond."
+],
+
+"who made you": [
+"I was created using code.",
+"A developer built me.",
+"I was programmed to chat with you."
+],
+
+"bye": [
+"Goodbye!",
+"See you later!",
+"Have a great day!"
+]
+
 };
 
-function talk() {
-    let input = document.getElementById("input").value.toLowerCase();
-    let chat = document.getElementById("chat");
+let defaultReplies = [
 
-    chat.innerHTML += "<p><b>You:</b> " + input + "</p>";
+"I'm not sure yet, but I'm learning.",
+"That's interesting.",
+"Can you tell me more?",
+"I understand.",
+"Let me think about that."
 
-    if (responses[input]) {
-        chat.innerHTML += "<p><b>Bot:</b> " + responses[input] + "</p>";
-    } else {
-        chat.innerHTML += "<p><b>Bot:</b> I don't understand yet.</p>";
-    }
+];
 
-    document.getElementById("input").value = "";
+function send() {
+
+let inputBox = document.getElementById("input");
+
+let text = inputBox.value.trim();
+
+if(text === "") return;
+
+addMessage(text, "user");
+
+let lower = text.toLowerCase();
+
+let reply;
+
+if(responses[lower]) {
+
+reply = responses[lower][Math.floor(Math.random()*responses[lower].length)];
+
+} else {
+
+reply = defaultReplies[Math.floor(Math.random()*defaultReplies.length)];
+
 }
+
+setTimeout(() => {
+
+addMessage(reply, "bot");
+
+}, 500);
+
+inputBox.value = "";
+
+}
+
+function addMessage(text, sender) {
+
+let chat = document.getElementById("chat");
+
+let div = document.createElement("div");
+
+div.className = "message " + sender;
+
+div.innerText = text;
+
+chat.appendChild(div);
+
+chat.scrollTop = chat.scrollHeight;
+
+}
+
+function newChat() {
+
+document.getElementById("chat").innerHTML = "";
+
+}
+
 </script>
 
 </body>
