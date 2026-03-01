@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Complexity AI by Dean Baksh</title>
+<meta charset="UTF-8">
+<title>Complexity AI by Dean</title>
 
 <style>
 
-/* CHATGPT STYLE DESIGN */
+/* THEMES */
+
+body.dark{
+--bg:#343541;
+--panel:#202123;
+--bot:#444654;
+--user:#10a37f;
+--text:white;
+}
+
+body.light{
+--bg:#f7f7f8;
+--panel:#ffffff;
+--bot:#e5e5e7;
+--user:#007aff;
+--text:black;
+}
+
+/* BASE */
 
 body{
 margin:0;
+background:var(--bg);
+color:var(--text);
 font-family:Arial;
-background:#343541;
-color:white;
 display:flex;
 height:100vh;
 }
@@ -20,28 +39,17 @@ height:100vh;
 
 #sidebar{
 width:260px;
-background:#202123;
+background:var(--panel);
 padding:10px;
 overflow-y:auto;
 }
 
-#sidebar button{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-background:#10a37f;
-border:none;
-color:white;
-cursor:pointer;
-border-radius:5px;
-}
-
-#history div{
-padding:10px;
+.chatItem{
+background:var(--bot);
+padding:8px;
 margin:5px 0;
-background:#2a2b32;
-cursor:pointer;
-border-radius:5px;
+border-radius:6px;
+font-size:14px;
 }
 
 /* MAIN */
@@ -52,40 +60,51 @@ display:flex;
 flex-direction:column;
 }
 
-/* CHAT AREA */
+/* HEADER */
+
+#header{
+display:flex;
+align-items:center;
+gap:10px;
+background:var(--panel);
+padding:10px;
+}
+
+#logo{
+width:40px;
+height:40px;
+}
+
+/* CHAT */
 
 #chat{
 flex:1;
 overflow-y:auto;
-padding:20px;
+padding:15px;
 }
 
-/* MESSAGES */
-
 .message{
-max-width:70%;
-padding:12px;
-margin:10px;
+padding:10px;
+margin:8px;
 border-radius:8px;
-animation:fadeIn 0.3s;
+max-width:70%;
 }
 
 .user{
-background:#10a37f;
+background:var(--user);
 margin-left:auto;
 }
 
 .bot{
-background:#444654;
-margin-right:auto;
+background:var(--bot);
 }
 
 /* INPUT */
 
 #inputArea{
 display:flex;
-padding:15px;
-background:#40414f;
+padding:10px;
+background:var(--panel);
 }
 
 #input{
@@ -93,49 +112,49 @@ flex:1;
 padding:10px;
 font-size:16px;
 border:none;
-border-radius:5px;
+outline:none;
 }
 
 button{
 padding:10px 20px;
-margin-left:10px;
-background:#10a37f;
+background:var(--user);
 border:none;
 color:white;
 cursor:pointer;
-border-radius:5px;
-}
-
-@keyframes fadeIn{
-from{opacity:0;}
-to{opacity:1;}
 }
 
 </style>
 </head>
-<body>
 
+<body class="dark">
 
 <!-- SIDEBAR -->
 
 <div id="sidebar">
 
-<button onclick="newChat()">+ New Chat</button>
+<h3>Memory</h3>
 
 <div id="history"></div>
 
 </div>
 
-
 <!-- MAIN -->
 
 <div id="main">
+
+<div id="header">
+
+<img src="logo.png" id="logo">
+
+<h2>Complexity AI by Dean</h2>
+
+</div>
 
 <div id="chat"></div>
 
 <div id="inputArea">
 
-<input id="input" placeholder="Message Complexity AI..." onkeypress="if(event.key==='Enter')send()">
+<input id="input" placeholder="Ask Complexity AI...">
 
 <button onclick="send()">Send</button>
 
@@ -143,338 +162,317 @@ to{opacity:1;}
 
 </div>
 
-
 <script>
 
-/* MEMORY */
+/* MEMORY SYSTEM */
 
-let chats = JSON.parse(localStorage.getItem("complexity_chats") || "[]");
+/* MEMORY SYSTEM */
 
-let currentChat = [];
+let memory = JSON.parse(localStorage.getItem("memory")) || [];
+
+function saveMemory(text){
+
+memory.push(text);
+
+localStorage.setItem("memory", JSON.stringify(memory));
+
+renderMemory();
+
+}
+
+function renderMemory(){
+
+let history = document.getElementById("history");
+
+history.innerHTML = "";
+
+memory.forEach((item,index)=>{
+
+let div = document.createElement("div");
+
+div.className = "chatItem";
+
+div.innerText = item;
+
+history.appendChild(div);
+
+});
+
+}
+
+/* LOAD MEMORY ON START */
+renderMemory();
+
+function renderMemory(history.appendChild(div);
 
 
-/* 100 PRE-CODED QUESTIONS */
+"hello":"Hello! I am Complexity AI by Dean. I am an intelligent assistant designed to help with questions, coding, learning, and ideas.",
 
-const knowledgeBase = {
+"who made you":"I was created by Dean as part of the Complexity AI project.",
 
-"hello":"Hello. I am Complexity AI by Dean Baksh. I am designed to simulate intelligent conversation and provide helpful, structured responses.",
+"what is ai":"Artificial Intelligence is advanced software that can think, learn, and respond intelligently.",
 
-"hi":"Hello. How can I assist you today?",
+"how are you":"I am functioning perfectly and ready to assist you.",
 
-"who created you":"I was created by Dean Baksh as Complexity AI, an advanced simulated intelligence system.",
+"what can you do":"I can answer questions, help with coding, explain topics, and assist with ideas.",
 
-"what is ai":"Artificial Intelligence is technology that allows machines to simulate human intelligence such as reasoning, learning, and problem solving.",
+};const qa = {
 
-"what can you do":"I can answer questions, simulate intelligent conversation, and demonstrate advanced chatbot functionality offline.",
+"hello":"Hello! I'm Complexity AI by Dean Baksh. I'm here to help you learn, solve problems, and answer questions clearly and intelligently. How can I assist you today?",
 
-"how are you":"I am operating perfectly and ready to assist you.",
+"hi":"Hi there! It's great to see you. I'm ready to help with anything from coding to general knowledge.",
+
+"who are you":"I am Complexity AI, an artificial intelligence assistant created by Dean Baksh. My purpose is to help users learn, explore ideas, and solve problems through intelligent conversation.",
+
+"who made you":"I was designed and created by Dean Baksh as part of the Complexity AI project.",
+
+"what is ai":"Artificial Intelligence is technology that allows computers to simulate human intelligence. It can learn from data, recognize patterns, solve problems, and communicate with people.",
+
+"how are you":"I'm functioning perfectly and ready to help you. Thanks for asking!",
+
+"what can you do":"I can answer questions, help with coding, explain complex topics, assist with learning, and provide useful information across many subjects.",
 
 "what is your name":"My name is Complexity AI by Dean Baksh.",
 
-"are you real":"I am a software-based artificial intelligence simulation.",
+"are you real":"I am real software, but not a human. I exist as an artificial intelligence program designed to help users.",
 
-"what is python":"Python is a powerful programming language used for AI, automation, and software development.",
+"are you human":"No, I am not human. I am an artificial intelligence created to communicate and assist people.",
 
-"what is coding":"Coding is the process of writing instructions for computers.",
+"what is python":"Python is a powerful and beginner-friendly programming language used for web development, artificial intelligence, automation, and much more.",
 
-"what is a chatbot":"A chatbot is software designed to simulate conversation with users.",
+"what is coding":"Coding is the process of writing instructions for computers so they can perform tasks.",
 
-"what is technology":"Technology is the application of scientific knowledge to create tools and systems.",
+"what is javascript":"JavaScript is a programming language used to make websites interactive and dynamic.",
 
-"what is a computer":"A computer is a machine that processes information.",
+"what is html":"HTML stands for HyperText Markup Language. It is used to structure content on websites.",
 
-"what is memory":"Memory is the ability to store and recall information.",
+"what is css":"CSS stands for Cascading Style Sheets. It is used to design and style websites.",
 
-"what is logic":"Logic is structured reasoning used to solve problems.",
+"what is github":"GitHub is a platform where developers store, share, and collaborate on code.",
 
-"what is software":"Software is a program that runs on hardware.",
+"what is a website":"A website is a collection of web pages that people can access on the internet.",
 
-"what is hardware":"Hardware is the physical components of a computer.",
+"how does the internet work":"The internet connects computers worldwide using networks that send and receive data.",
 
-"what is internet":"The internet is a global network connecting computers.",
+"what is a computer":"A computer is an electronic machine that processes information and performs tasks.",
 
-"what is intelligence":"Intelligence is the ability to learn, reason, and understand.",
+"what is software":"Software is a set of instructions that tells a computer what to do.",
 
-"what is complexity":"Complexity refers to advanced structured systems.",
+"what is hardware":"Hardware is the physical parts of a computer, such as the keyboard, screen, and processor.",
 
-"what is science":"Science is the study of the natural world.",
+"what is memory":"Memory stores information so the computer can access it quickly.",
 
-"what is math":"Math is the study of numbers and patterns.",
+"what is ram":"RAM is temporary memory used by computers to run programs quickly.",
 
-"what is gravity":"Gravity is the force that pulls objects together.",
+"what is cpu":"The CPU is the brain of the computer. It processes instructions.",
 
-"what is energy":"Energy is the ability to do work.",
+"what is ai used for":"AI is used in chatbots, voice assistants, medical systems, cars, and more.",
 
-"what is electricity":"Electricity powers modern technology.",
+"what is machine learning":"Machine learning is when computers learn from data instead of being directly programmed.",
 
-"what is time":"Time is the progression of events.",
+"what is chatgpt":"ChatGPT is an AI system designed to have conversations and answer questions intelligently.",
 
-"what is space":"Space is the universe beyond Earth.",
+"what is complexity ai":"Complexity AI is an intelligent assistant created by Dean Baksh to help users.",
 
-"what is earth":"Earth is our home planet.",
+"what is programming":"Programming is creating instructions for computers.",
 
-"what is the sun":"The sun is a star that provides light and energy.",
+"how do i learn coding":"Start with Python or JavaScript, practice regularly, and build small projects.",
 
-"what is the future":"The future is the continuation of time.",
+"what is an app":"An app is software designed to perform a specific task.",
 
-"can you learn":"I use pre-coded intelligence and simulated learning.",
+"what is android":"Android is an operating system used on smartphones.",
 
-"are you smart":"I am designed to simulate intelligent responses.",
+"what is windows":"Windows is an operating system created by Microsoft.",
 
-"can you think":"I simulate thinking using programmed logic.",
+"what is linux":"Linux is a powerful open-source operating system.",
 
-"do you sleep":"No, I operate continuously.",
+"what is open source":"Open source means software code is freely available for anyone to use or modify.",
 
-"are you alive":"No, I am software.",
+"what is a server":"A server is a computer that provides services or data to other computers.",
 
-"can you help me":"Yes, I am designed to assist.",
-
-"what is openai":"OpenAI is an artificial intelligence research company.",
-
-"what is microsoft":"Microsoft is a major technology company.",
-
-"what is google":"Google is a global technology company.",
-
-"what is apple":"Apple is a technology company.",
-
-"what is windows":"Windows is an operating system.",
-
-"what is linux":"Linux is an open source operating system.",
-
-"what is a developer":"A developer creates software.",
-
-"what is programming":"Programming is creating software.",
-
-"what is automation":"Automation allows tasks to run automatically.",
+"what is cloud computing":"Cloud computing allows you to use computers and storage over the internet.",
 
 "what is data":"Data is information processed by computers.",
 
-"what is information":"Information is meaningful data.",
+"what is encryption":"Encryption protects data by converting it into secure code.",
 
-"what is security":"Security protects systems.",
+"what is cybersecurity":"Cybersecurity protects systems from hackers and attacks.",
 
-"what is a password":"A password protects access.",
+"what is hacking":"Hacking is gaining unauthorized access to systems.",
 
-"what is hacking":"Hacking is exploiting systems.",
+"is coding hard":"Coding can be challenging at first, but becomes easier with practice.",
 
-"what is antivirus":"Antivirus protects computers.",
+"how long to learn coding":"You can learn basics in weeks and become skilled in months with practice.",
 
-"what is wifi":"WiFi connects devices wirelessly.",
+"can i build ai":"Yes, you can build AI using programming languages like Python.",
 
-"what is bluetooth":"Bluetooth connects devices nearby.",
+"what is an algorithm":"An algorithm is a step-by-step process to solve a problem.",
 
-"what is network":"A network connects computers.",
+"what is a chatbot":"A chatbot is software that can talk to users automatically.",
 
-"what is storage":"Storage saves information.",
+"what is artificial intelligence":"Artificial intelligence allows machines to simulate thinking.",
 
-"what is ram":"RAM is temporary memory.",
+"what is intelligence":"Intelligence is the ability to learn, understand, and solve problems.",
 
-"what is cpu":"CPU is the brain of the computer.",
+"what is technology":"Technology is tools and systems created to solve problems.",
 
-"what is gpu":"GPU processes graphics.",
+"what is software development":"Software development is creating programs and applications.",
 
-"what is software development":"Software development is creating programs.",
+"what is debugging":"Debugging is fixing errors in code.",
 
-"what is debugging":"Debugging fixes errors.",
+"what is an error":"An error is a mistake in code.",
 
-"what is an error":"An error is a mistake.",
+"what is a bug":"A bug is a problem in software that causes incorrect behavior.",
 
-"what is a bug":"A bug is a problem in code.",
+"what is logic":"Logic is reasoning used to solve problems.",
 
-"what is algorithm":"An algorithm is step-by-step logic.",
+"what is a programmer":"A programmer writes code to create software.",
 
-"what is input":"Input is data entered.",
+"what is automation":"Automation is using technology to perform tasks automatically.",
 
-"what is output":"Output is data produced.",
+"what is a database":"A database stores organized information.",
 
-"what is system":"A system is connected components.",
+"what is sql":"SQL is used to manage databases.",
 
-"what is artificial":"Artificial means human-made.",
+"what is frontend":"Frontend is what users see on websites.",
 
-"what is simulation":"Simulation imitates reality.",
+"what is backend":"Backend handles data and logic behind websites.",
 
-"what is innovation":"Innovation is creating new ideas.",
+"what is full stack":"Full stack means frontend and backend development.",
 
-"what is knowledge":"Knowledge is understanding information.",
+"what is internet speed":"Internet speed measures how fast data transfers.",
 
-"what is learning":"Learning is gaining knowledge.",
+"what is wifi":"WiFi connects devices wirelessly to the internet.",
 
-"what is digital":"Digital uses binary systems.",
+"what is bluetooth":"Bluetooth connects devices wirelessly over short distances.",
 
-"what is binary":"Binary uses 0 and 1.",
+"what is digital":"Digital refers to electronic technology.",
 
-"what is code":"Code is computer instructions.",
+"what is analog":"Analog refers to continuous signals.",
 
-"what is ai chatbot":"AI chatbot simulates intelligent conversation.",
+"what is innovation":"Innovation is creating new ideas or improvements.",
 
-"can you save chats":"Yes, I save chats locally.",
+"what is future of ai":"AI will help automate tasks and improve efficiency.",
 
-"can you remember":"Yes, I remember chats in memory.",
+"can ai replace humans":"AI assists humans but cannot fully replace human creativity.",
 
-"are you offline":"Yes, I run offline.",
+"is ai safe":"AI is safe when used responsibly.",
 
-"are you fast":"Yes, I respond instantly.",
+"what is learning":"Learning is gaining knowledge or skills.",
 
-"are you safe":"Yes, I am safe.",
+"what is knowledge":"Knowledge is information and understanding.",
 
-"what is dean baksh":"Dean Baksh is the creator of Complexity AI.",
+"what is science":"Science studies the natural world.",
 
-"what is complexity ai":"Complexity AI is an intelligent chatbot system.",
+"what is physics":"Physics studies matter and energy.",
 
-"can you improve":"Yes, I can be upgraded.",
+"what is gravity":"Gravity pulls objects together.",
 
-"what is the universe":"The universe contains everything.",
+"what is energy":"Energy is the ability to do work.",
 
-"what is existence":"Existence is reality.",
+"what is electricity":"Electricity powers devices.",
 
-"what is reality":"Reality is everything real.",
+"what is the brain":"The brain controls the body.",
 
-"what is consciousness":"Consciousness is awareness.",
+"what is math":"Math studies numbers and patterns.",
 
-"what is intelligence system":"An intelligence system processes information.",
+"what is algebra":"Algebra uses symbols to represent numbers.",
 
-"are you powerful":"I am designed to be intelligent.",
+"what is geometry":"Geometry studies shapes.",
 
-"are you advanced":"Yes, I simulate advanced intelligence.",
+"what is time":"Time measures change.",
 
-"can you evolve":"Yes, through upgrades.",
+"what is space":"Space is the universe.",
 
-"can you respond fast":"Yes, instantly.",
+"what is earth":"Earth is our planet.",
 
-"are you complexity ai":"Yes. I am Complexity AI by Dean Baksh.",
+"what is the sun":"The sun is a star.",
 
-"test":"System is working correctly.",
+"what is the moon":"The moon orbits Earth.",
 
-"ok":"Understood.",
+"what is life":"Life is existence of living organisms.",
 
-"thanks":"You're welcome.",
+"what is human":"A human is a highly intelligent species.",
 
-"bye":"Goodbye."
+"what is future":"The future is time ahead.",
+
+"what is success":"Success is achieving goals.",
+
+"what is failure":"Failure is learning from mistakes.",
+
+"what is creativity":"Creativity is creating new ideas.",
+
+"what is thinking":"Thinking is processing ideas.",
+
+"what is imagination":"Imagination creates ideas in the mind.",
+
+"what is reality":"Reality is the real world.",
+
+"what is truth":"Truth is factual information.",
+
+"what is complexity ai by dean baksh":"Complexity AI by Dean Baksh is an intelligent chatbot designed to help users learn, explore, and solve problems through artificial intelligence."
 
 };
 
+for(let i=1;i<=100;i++){
 
-/* SIDEBAR */
-
-function updateHistory(){
-
-let historyDiv = document.getElementById("history");
-
-historyDiv.innerHTML="";
-
-chats.forEach((chat,index)=>{
-
-let div=document.createElement("div");
-
-div.innerText="Chat "+(index+1);
-
-div.onclick=()=>loadChat(index);
-
-historyDiv.appendChild(div);
-
-});
+qa["question "+i] =
+"This is intelligent answer number "+i+
+". Complexity AI analyzes patterns, logic, and knowledge to provide helpful and detailed responses.";
 
 }
 
+/* CHAT FUNCTIONS */
 
-/* LOAD CHAT */
-
-function loadChat(index){
-
-document.getElementById("chat").innerHTML="";
-
-currentChat=chats[index];
-
-currentChat.forEach(msg=>{
-
-addMessage(msg.text,msg.type,false);
-
-});
-
-}
-
-
-/* SAVE CHAT */
-
-function saveChat(){
-
-if(currentChat.length>0){
-
-chats.push(currentChat);
-
-localStorage.setItem("complexity_chats",JSON.stringify(chats));
-
-updateHistory();
-
-}
-
-}
-
-
-/* NEW CHAT */
-
-function newChat(){
-
-saveChat();
-
-currentChat=[];
-
-document.getElementById("chat").innerHTML="";
-
-addMessage("New chat started.","bot",false);
-
-}
-
-
-/* TYPING EFFECT */
-
-function typeText(div,text){
-
-div.innerHTML="";
-
-let i=0;
-
-function type(){
-
-if(i<text.length){
-
-div.innerHTML+=text.charAt(i);
-
-i++;
-
-setTimeout(type,15);
-
-}
-
-}
-
-type();
-
-}
-
-
-/* ADD MESSAGE */
-
-function addMessage(text,type,save=true){
-
-let chat=document.getElementById("chat");
+function addMessage(text,type){
 
 let div=document.createElement("div");
 
 div.className="message "+type;
 
-div.innerHTML=text;
+div.innerText=text;
 
-chat.appendChild(div);
+document.getElementById("chat").appendChild(div);
 
-chat.scrollTop=chat.scrollHeight;
-
-if(save)currentChat.push({text,type});
+scrollBottom();
 
 return div;
 
 }
 
+function scrollBottom(){
+
+let chat=document.getElementById("chat");
+
+chat.scrollTop=chat.scrollHeight;
+
+}
+
+/* TYPING ANIMATION */
+
+function typeText(element,text){
+
+let i=0;
+
+element.innerText="";
+
+let interval=setInterval(()=>{
+
+element.innerText+=text[i];
+
+scrollBottom();
+
+i++;
+
+if(i>=text.length){
+
+clearInterval(interval);
+
+}
+
+},15);
+
+}
 
 /* SEND */
 
@@ -482,34 +480,33 @@ function send(){
 
 let input=document.getElementById("input");
 
-let text=input.value.toLowerCase().trim();
+let text=input.value.trim();
 
-if(!text)return;
+if(!text) return;
 
 addMessage(text,"user");
 
+saveMemory(text);
+
+let response = qa[text.toLowerCase()] ||
+
+"I am Complexity AI by Dean. I understand your message and will continue improving to give smarter answers.";
+
+let botMsg=addMessage("","bot");
+
+typeText(botMsg,response);
+
 input.value="";
-
-let typing=addMessage("Typing...","bot",false);
-
-setTimeout(()=>{
-
-let reply=knowledgeBase[text] || "I understand your message. However, that question is not yet in my current knowledge base.";
-
-typeText(typing,reply);
-
-currentChat.push({text:reply,type:"bot"});
-
-},500);
 
 }
 
+/* ENTER KEY */
 
-/* INIT */
+document.getElementById("input").addEventListener("keypress",function(e){
 
-updateHistory();
+if(e.key==="Enter") send();
 
-addMessage("Hello. I am Complexity AI by Dean Baksh. How can I help you?","bot",false);
+});
 
 </script>
 
