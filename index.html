@@ -9,48 +9,80 @@
 /* THEMES */
 
 body.dark{
---bg:#343541;
---panel:#202123;
---bot:#444654;
---user:#10a37f;
---text:white;
+background:#202123;
+color:white;
 }
 
 body.light{
---bg:#f7f7f8;
---panel:#ffffff;
---bot:#e5e5e7;
---user:#007aff;
---text:black;
+background:#f7f7f8;
+color:black;
 }
 
-/* BASE */
+/* BACKGROUNDS */
+
+body.bg1{background:linear-gradient(135deg,#343541,#202123);}
+body.bg2{background:linear-gradient(135deg,#0f172a,#1e293b);}
+body.bg3{background:linear-gradient(135deg,#1a2a6c,#b21f1f,#fdbb2d);}
+body.bg4{background:linear-gradient(135deg,#134e5e,#71b280);}
+body.bg5{background:linear-gradient(135deg,#42275a,#734b6d);}
 
 body{
 margin:0;
-background:var(--bg);
-color:var(--text);
 font-family:Arial;
 display:flex;
 height:100vh;
+transition:0.3s;
+}
+
+/* LOGIN SCREEN */
+
+#loginScreen{
+position:absolute;
+width:100%;
+height:100%;
+background:#202123;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:1000;
+}
+
+#loginBox{
+background:#2a2b32;
+padding:30px;
+border-radius:10px;
+width:300px;
+text-align:center;
+}
+
+#loginBox input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+}
+
+#loginBox button{
+margin-top:10px;
+padding:12px;
+width:100%;
+border:none;
+background:#10a37f;
+color:white;
+cursor:pointer;
+border-radius:6px;
 }
 
 /* SIDEBAR */
 
 #sidebar{
 width:260px;
-background:var(--panel);
+background:rgba(0,0,0,0.4);
 padding:10px;
 overflow-y:auto;
-}
-
-.chatItem{
-background:var(--bot);
-padding:8px;
-margin:5px 0;
-border-radius:6px;
-font-size:14px;
-cursor:pointer;
+backdrop-filter:blur(10px);
 }
 
 /* MAIN */
@@ -59,21 +91,22 @@ cursor:pointer;
 flex:1;
 display:flex;
 flex-direction:column;
+background:rgba(0,0,0,0.3);
 }
 
 /* HEADER */
 
 #header{
+padding:15px;
+background:rgba(0,0,0,0.4);
+font-size:20px;
 display:flex;
 align-items:center;
 gap:10px;
-background:var(--panel);
-padding:10px;
 }
 
 #logo{
 width:40px;
-height:40px;
 }
 
 /* CHAT */
@@ -86,19 +119,18 @@ padding:15px;
 
 .message{
 padding:12px;
-margin:8px;
-border-radius:8px;
+margin:10px;
+border-radius:10px;
 max-width:70%;
-white-space:pre-wrap;
 }
 
 .user{
-background:var(--user);
+background:#10a37f;
 margin-left:auto;
 }
 
 .bot{
-background:var(--bot);
+background:#444654;
 }
 
 /* INPUT */
@@ -106,38 +138,48 @@ background:var(--bot);
 #inputArea{
 display:flex;
 padding:10px;
-background:var(--panel);
+background:rgba(0,0,0,0.4);
 }
 
 #input{
 flex:1;
-padding:10px;
-font-size:16px;
+padding:12px;
 border:none;
-outline:none;
-border-radius:5px;
+border-radius:6px;
 }
+
+/* BUTTONS */
 
 button{
+margin-top:5px;
 padding:10px;
-margin-left:5px;
-background:var(--user);
+width:100%;
 border:none;
+background:#10a37f;
 color:white;
 cursor:pointer;
-border-radius:5px;
+border-radius:6px;
 }
 
-/* TYPING DOTS */
-
-.typing {
-display:inline-block;
+.chatItem{
+background:#444654;
 padding:10px;
-background:var(--bot);
-border-radius:8px;
+margin:5px 0;
+cursor:pointer;
+border-radius:6px;
 }
 
-.dot {
+/* THINKING DOTS */
+
+.typing{
+padding:12px;
+margin:10px;
+background:#444654;
+border-radius:10px;
+display:inline-block;
+}
+
+.dot{
 display:inline-block;
 width:6px;
 height:6px;
@@ -147,35 +189,59 @@ border-radius:50%;
 animation:blink 1.4s infinite;
 }
 
-.dot:nth-child(2){
-animation-delay:0.2s;
-}
+.dot:nth-child(2){animation-delay:0.2s;}
+.dot:nth-child(3){animation-delay:0.4s;}
 
-.dot:nth-child(3){
-animation-delay:0.4s;
-}
-
-@keyframes blink {
-0% {opacity:0.2;}
-20% {opacity:1;}
-100% {opacity:0.2;}
+@keyframes blink{
+0%{opacity:0.2;}
+20%{opacity:1;}
+100%{opacity:0.2;}
 }
 
 </style>
 </head>
 
-<body class="dark">
+<body class="dark bg1">
+
+<!-- LOGIN SCREEN -->
+
+<div id="loginScreen">
+
+<div id="loginBox">
+
+<h2>Complexity AI Login</h2>
+
+<input id="username" placeholder="Enter username">
+
+<button onclick="login()">Login</button>
+
+</div>
+
+</div>
 
 <!-- SIDEBAR -->
 
 <div id="sidebar">
 
-<h3>Complexity AI</h3>
+<button onclick="newChat()">+ New Chat</button>
 
-<button onclick="setTheme('dark')">Dark</button>
-<button onclick="setTheme('light')">Light</button>
+<button onclick="exportChat()">Export Chat</button>
 
-<h3>Memory</h3>
+<button onclick="deleteChat()">Delete Chat</button>
+
+<button onclick="logout()">Logout</button>
+
+<button onclick="toggleTheme()">Dark / Light Mode</button>
+
+<h3>Backgrounds</h3>
+
+<button onclick="setBG('bg1')">Background 1</button>
+<button onclick="setBG('bg2')">Background 2</button>
+<button onclick="setBG('bg3')">Background 3</button>
+<button onclick="setBG('bg4')">Background 4</button>
+<button onclick="setBG('bg5')">Background 5</button>
+
+<h3>Chats</h3>
 
 <div id="history"></div>
 
@@ -187,9 +253,9 @@ animation-delay:0.4s;
 
 <div id="header">
 
-<img id="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...">
+<img id="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA">
 
-<h2>Complexity AI by Dean Baksh</h2>
+Complexity AI by Dean Baksh
 
 </div>
 
@@ -197,7 +263,7 @@ animation-delay:0.4s;
 
 <div id="inputArea">
 
-<input id="input" placeholder="Ask Complexity AI...">
+<input id="input" placeholder="Ask anything...">
 
 <button onclick="send()">Send</button>
 
@@ -207,49 +273,95 @@ animation-delay:0.4s;
 
 <script>
 
+/* USER */
+
+let user=null;
+
+/* LOGIN */
+
+function login(){
+
+let name=document.getElementById("username").value.trim();
+
+if(!name){
+
+alert("Enter username");
+
+return;
+
+}
+
+user=name;
+
+localStorage.setItem("complexityUser",user);
+
+document.getElementById("loginScreen").style.display="none";
+
+loadChats();
+
+}
+
+/* AUTO LOGIN */
+
+if(localStorage.getItem("complexityUser")){
+
+user=localStorage.getItem("complexityUser");
+
+document.getElementById("loginScreen").style.display="none";
+
+loadChats();
+
+}
+
+/* LOGOUT */
+
+function logout(){
+
+localStorage.removeItem("complexityUser");
+
+location.reload();
+
+}
+
 /* THEME */
 
-function setTheme(theme){
-document.body.className = theme;
-localStorage.setItem("theme", theme);
-}
+function toggleTheme(){
 
-let savedTheme = localStorage.getItem("theme");
-if(savedTheme) document.body.className = savedTheme;
-
-/* MEMORY */
-
-let memory = JSON.parse(localStorage.getItem("memory")) || [];
-
-function saveMemory(text){
-memory.push(text);
-localStorage.setItem("memory", JSON.stringify(memory));
-renderMemory();
-}
-
-function renderMemory(){
-
-let history=document.getElementById("history");
-
-history.innerHTML="";
-
-memory.forEach(item=>{
-
-let div=document.createElement("div");
-
-div.className="chatItem";
-
-div.innerText=item;
-
-history.appendChild(div);
-
-});
+document.body.classList.toggle("light");
+document.body.classList.toggle("dark");
 
 }
 
-renderMemory();
+/* BACKGROUND */
 
-/* QUESTIONS */
+function setBG(bg){
+
+document.body.className=document.body.className.replace(/bg\d/g,'');
+
+document.body.classList.add(bg);
+
+}
+
+/* CHAT STORAGE */
+
+let chats=[];
+let currentChat=null;
+
+function loadChats(){
+
+chats=JSON.parse(localStorage.getItem("chats_"+user))||[];
+
+renderChats();
+
+}
+
+function saveChats(){
+
+localStorage.setItem("chats_"+user,JSON.stringify(chats));
+
+}
+
+/* QA */
 
 const qa={
 
@@ -511,30 +623,97 @@ const qa={
 
 "what is google":"Google is a global technology company specialising in search, cloud computing, and AI."
 
+"hello":"Hello. Welcome to Complexity AI by Dean Baksh.",
 
-"hello":"Hello. I am Complexity AI by Dean Baksh, an advanced intelligent assistant designed to provide professional, accurate, and helpful responses.",
+"what is google":"Google is a global technology company specialising in search, AI, and cloud computing.",
 
-"who are you":"I am Complexity AI by Dean Baksh, a professionally developed artificial intelligence assistant designed to help users with information, learning, and problem solving.",
-
-"what is google":"Google is one of the world's leading technology companies, providing search, artificial intelligence, cloud computing, and digital services used by billions globally.",
-
-"what is ai":"Artificial intelligence is advanced computer technology designed to simulate human intelligence, enabling machines to learn, reason, and respond intelligently.",
-
-"what can you do":"I can answer questions, assist with learning, provide explanations, and help solve problems using intelligent programmed responses."
+"what is ai":"Artificial intelligence is software capable of intelligent reasoning and learning."
 
 };
 
-for(let i=1;i<=100;i++){
+/* CHAT UI */
 
-qa["question "+i] =
-"This is professional response number "+i+
-". Complexity AI by Dean Baksh has analysed your question and provided a structured and intelligent answer.";
+function renderChats(){
+
+history.innerHTML="";
+
+chats.forEach((c,i)=>{
+
+let div=document.createElement("div");
+
+div.className="chatItem";
+
+div.innerText="Chat "+(i+1);
+
+div.onclick=()=>loadChat(i);
+
+history.appendChild(div);
+
+});
 
 }
 
-/* CHAT */
+function loadChat(i){
 
-function addMessage(text,type){
+currentChat=i;
+
+chat.innerHTML="";
+
+chats[i].forEach(m=>addMessage(m.text,m.type,false));
+
+}
+
+function newChat(){
+
+let c=[];
+
+chats.push(c);
+
+currentChat=chats.length-1;
+
+saveChats();
+
+renderChats();
+
+chat.innerHTML="";
+
+}
+
+function deleteChat(){
+
+if(currentChat==null)return;
+
+chats.splice(currentChat,1);
+
+saveChats();
+
+renderChats();
+
+chat.innerHTML="";
+
+}
+
+function exportChat(){
+
+if(currentChat==null)return;
+
+let text=chats[currentChat].map(m=>m.type+": "+m.text).join("\n");
+
+let blob=new Blob([text]);
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="chat.txt";
+
+a.click();
+
+}
+
+/* MESSAGE */
+
+function addMessage(text,type,save=true){
 
 let div=document.createElement("div");
 
@@ -546,47 +725,31 @@ chat.appendChild(div);
 
 chat.scrollTop=chat.scrollHeight;
 
-return div;
+if(save){
+
+chats[currentChat].push({text,type});
+
+saveChats();
 
 }
-
-/* TYPING DOTS */
-
-function showTyping(){
-
-let div=document.createElement("div");
-
-div.className="message bot typing";
-
-div.innerHTML=`
-<span class="dot"></span>
-<span class="dot"></span>
-<span class="dot"></span>
-`;
-
-chat.appendChild(div);
-
-chat.scrollTop=chat.scrollHeight;
 
 return div;
 
 }
 
-/* TYPE TEXT */
+/* TYPE */
 
 function typeText(el,text){
 
 let i=0;
 
-let interval=setInterval(()=>{
+let int=setInterval(()=>{
 
 el.innerText+=text[i];
 
-chat.scrollTop=chat.scrollHeight;
-
 i++;
 
-if(i>=text.length) clearInterval(interval);
+if(i>=text.length) clearInterval(int);
 
 },15);
 
@@ -596,23 +759,31 @@ if(i>=text.length) clearInterval(interval);
 
 function send(){
 
-let input=document.getElementById("input");
-
 let text=input.value.trim();
 
-if(!text) return;
+if(!text)return;
+
+if(currentChat==null)newChat();
 
 addMessage(text,"user");
 
-saveMemory(text);
-
 input.value="";
 
-let typing=showTyping();
+/* thinking */
 
-let reply = qa[text.toLowerCase()] ||
+let typing=document.createElement("div");
 
-"I understand your message. Complexity AI by Dean Baksh is designed to provide intelligent, professional, and helpful responses.";
+typing.className="typing";
+
+typing.innerHTML="<span class='dot'></span><span class='dot'></span><span class='dot'></span>";
+
+chat.appendChild(typing);
+
+let reply=qa[text.toLowerCase()]||
+
+"Complexity AI understands your request and will respond professionally.";
+
+/* response */
 
 setTimeout(()=>{
 
@@ -626,18 +797,9 @@ typeText(bot,reply);
 
 }
 
-input.addEventListener("keypress",e=>{
-if(e.key==="Enter") send();
-});
+/* INIT */
 
-/* START MESSAGE */
-
-window.onload=()=>{
-addMessage(
-"Welcome. I am Complexity AI by Dean Baksh. How may I assist you today?",
-"bot"
-);
-};
+renderChats();
 
 </script>
 
