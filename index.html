@@ -6,30 +6,17 @@
 
 <style>
 
-/* THEMES */
+/* BACKGROUNDS */
 
-body.dark{
---bg:#343541;
---panel:#202123;
---bot:#444654;
---user:#10a37f;
---text:white;
-}
-
-body.light{
---bg:#f7f7f8;
---panel:#ffffff;
---bot:#e5e5e7;
---user:#007aff;
---text:black;
-}
-
-/* BASE */
+body.bg1{background:linear-gradient(135deg,#343541,#202123);}
+body.bg2{background:linear-gradient(135deg,#0f172a,#1e293b);}
+body.bg3{background:linear-gradient(135deg,#1a2a6c,#b21f1f,#fdbb2d);}
+body.bg4{background:linear-gradient(135deg,#134e5e,#71b280);}
+body.bg5{background:linear-gradient(135deg,#42275a,#734b6d);}
 
 body{
 margin:0;
-background:var(--bg);
-color:var(--text);
+color:white;
 font-family:Arial;
 display:flex;
 height:100vh;
@@ -39,17 +26,10 @@ height:100vh;
 
 #sidebar{
 width:260px;
-background:var(--panel);
+background:rgba(0,0,0,0.4);
 padding:10px;
 overflow-y:auto;
-}
-
-.chatItem{
-background:var(--bot);
-padding:8px;
-margin:5px 0;
-border-radius:6px;
-font-size:14px;
+backdrop-filter:blur(10px);
 }
 
 /* MAIN */
@@ -58,21 +38,15 @@ font-size:14px;
 flex:1;
 display:flex;
 flex-direction:column;
+background:rgba(0,0,0,0.3);
 }
 
 /* HEADER */
 
 #header{
-display:flex;
-align-items:center;
-gap:10px;
-background:var(--panel);
-padding:10px;
-}
-
-#logo{
-width:40px;
-height:40px;
+padding:15px;
+background:rgba(0,0,0,0.4);
+font-size:20px;
 }
 
 /* CHAT */
@@ -84,19 +58,19 @@ padding:15px;
 }
 
 .message{
-padding:10px;
-margin:8px;
-border-radius:8px;
+padding:12px;
+margin:10px;
+border-radius:10px;
 max-width:70%;
 }
 
 .user{
-background:var(--user);
+background:#10a37f;
 margin-left:auto;
 }
 
 .bot{
-background:var(--bot);
+background:#444654;
 }
 
 /* INPUT */
@@ -104,57 +78,94 @@ background:var(--bot);
 #inputArea{
 display:flex;
 padding:10px;
-background:var(--panel);
+background:rgba(0,0,0,0.4);
 }
 
 #input{
 flex:1;
-padding:10px;
-font-size:16px;
+padding:12px;
 border:none;
-outline:none;
+border-radius:6px;
 }
 
+/* BUTTONS */
+
 button{
+margin-top:5px;
 padding:10px;
-margin-left:5px;
-background:var(--user);
+width:100%;
 border:none;
+background:#10a37f;
 color:white;
 cursor:pointer;
-border-radius:5px;
+border-radius:6px;
+}
+
+.chatItem{
+background:#444654;
+padding:10px;
+margin:5px 0;
+cursor:pointer;
+border-radius:6px;
+}
+
+/* LOGIN */
+
+#login{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
 }
 
 </style>
 </head>
 
-<body class="dark">
+<body class="bg1">
 
-<!-- SIDEBAR -->
+<div id="login">
+
+<h2>Login to Complexity AI</h2>
+
+<input id="username" placeholder="Enter username">
+
+<button onclick="login()">Login</button>
+
+</div>
 
 <div id="sidebar">
 
-<h3>Complexity AI</h3>
+<button onclick="newChat()">+ New Chat</button>
 
-<button onclick="setTheme('dark')">Dark</button>
-<button onclick="setTheme('light')">Light</button>
+<button onclick="exportChat()">Export Chat</button>
 
-<h3>Memory</h3>
+<button onclick="deleteChat()">Delete Chat</button>
+
+<h3>Backgrounds</h3>
+
+<button onclick="setBG('bg1')">Background 1</button>
+<button onclick="setBG('bg2')">Background 2</button>
+<button onclick="setBG('bg3')">Background 3</button>
+<button onclick="setBG('bg4')">Background 4</button>
+<button onclick="setBG('bg5')">Background 5</button>
+
+<h3>Chats</h3>
 
 <div id="history"></div>
 
 </div>
 
-<!-- MAIN -->
-
 <div id="main">
 
 <div id="header">
 
-<!-- EMBEDDED LOGO -->
-<img id="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...REPLACE_WITH_FULL_BASE64_FROM_ABOVE...">
-
-<h2>Complexity AI by Dean Baksh</h2>
+Complexity AI by Dean Baksh
 
 </div>
 
@@ -162,7 +173,7 @@ border-radius:5px;
 
 <div id="inputArea">
 
-<input id="input" placeholder="Ask Complexity AI...">
+<input id="input">
 
 <button onclick="send()">Send</button>
 
@@ -172,42 +183,70 @@ border-radius:5px;
 
 <script>
 
-/* THEME */
+/* LOGIN */
 
-function setTheme(theme){
-document.body.className = theme;
-localStorage.setItem("theme", theme);
+let user="";
+
+function login(){
+
+user=document.getElementById("username").value;
+
+if(!user) return;
+
+localStorage.setItem("complexityUser",user);
+
+document.getElementById("login").style.display="none";
+
+loadChats();
+
 }
 
-let savedTheme = localStorage.getItem("theme");
-if(savedTheme) document.body.className = savedTheme;
+if(localStorage.getItem("complexityUser")){
 
-/* MEMORY */
+user=localStorage.getItem("complexityUser");
 
-let memory = JSON.parse(localStorage.getItem("memory")) || [];
+document.getElementById("login").style.display="none";
 
-function saveMemory(text){
-memory.push(text);
-localStorage.setItem("memory", JSON.stringify(memory));
-renderMemory();
 }
 
-function renderMemory(){
-let history = document.getElementById("history");
-history.innerHTML="";
-memory.forEach(item=>{
-let div=document.createElement("div");
-div.className="chatItem";
-div.innerText=item;
-history.appendChild(div);
-});
+/* BACKGROUND */
+
+function setBG(bg){
+
+document.body.className=bg;
+
+localStorage.setItem("bg",bg);
+
 }
 
-renderMemory();
+let savedBG=localStorage.getItem("bg");
 
-/* QUESTIONS */
+if(savedBG) document.body.className=savedBG;
+
+/* CHAT STORAGE */
+
+let chats=[];
+
+let currentChat=null;
+
+function loadChats(){
+
+chats=JSON.parse(localStorage.getItem("chats_"+user))||[];
+
+renderChats();
+
+}
+
+function saveChats(){
+
+localStorage.setItem("chats_"+user,JSON.stringify(chats));
+
+}
+
+/* PRECODED QUESTIONS */
 
 const qa={
+
 "what is google": "Google is one of the world's leading technology companies, specialising in internet services such as search, cloud computing, artificial intelligence, and digital advertising. Its search engine is the most widely used globally, helping billions of users access information quickly and efficiently.",
 
 "what is artificial intelligence": "Artificial intelligence, often called AI, is a branch of computer science focused on creating systems capable of performing tasks that normally require human intelligence, such as understanding language, recognising patterns, solving problems, and making decisions.",
@@ -456,60 +495,167 @@ const qa={
 
 "what is ai":"Artificial Intelligence is technology that allows computers to simulate human intelligence and solve problems."
 
+"hello":"Hello. Welcome to Complexity AI by Dean Baksh. I am your professional AI assistant.",
+
+"what is ai":"Artificial intelligence is advanced software capable of intelligent reasoning and communication.",
+
+"who made you":"I was created by Dean Baksh as part of the Complexity AI system.",
+
+"what can you do":"I can answer questions, assist with coding, and provide intelligent responses.",
+
+"what is google":"Google is a global technology company specialising in search, cloud computing, and AI."
+
 };
 
-for(let i=1;i<=100;i++){
-qa["question "+i]="This is intelligent response number "+i+". Complexity AI analyzes your message and responds intelligently.";
-}
+/* CHAT FUNCTIONS */
 
-/* CHAT */
+function renderChats(){
 
-function addMessage(text,type){
+history.innerHTML="";
+
+chats.forEach((c,i)=>{
+
 let div=document.createElement("div");
-div.className="message "+type;
-div.innerText=text;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
-return div;
+
+div.className="chatItem";
+
+div.innerText="Chat "+(i+1);
+
+div.onclick=()=>loadChat(i);
+
+history.appendChild(div);
+
+});
+
 }
 
-/* TYPING */
+function loadChat(i){
+
+currentChat=i;
+
+chat.innerHTML="";
+
+chats[i].forEach(m=>addMessage(m.text,m.type,false));
+
+}
+
+function newChat(){
+
+let c=[];
+
+chats.push(c);
+
+currentChat=chats.length-1;
+
+saveChats();
+
+renderChats();
+
+chat.innerHTML="";
+
+}
+
+function deleteChat(){
+
+if(currentChat==null)return;
+
+chats.splice(currentChat,1);
+
+saveChats();
+
+renderChats();
+
+chat.innerHTML="";
+
+}
+
+function exportChat(){
+
+if(currentChat==null)return;
+
+let text=chats[currentChat]
+
+.map(m=>m.type+": "+m.text)
+
+.join("\n");
+
+let blob=new Blob([text]);
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="chat.txt";
+
+a.click();
+
+}
+
+function addMessage(text,type,save=true){
+
+let div=document.createElement("div");
+
+div.className="message "+type;
+
+div.innerText=text;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+if(save){
+
+chats[currentChat].push({text,type});
+
+saveChats();
+
+}
+
+return div;
+
+}
 
 function typeText(el,text){
-let i=0;
-let interval=setInterval(()=>{
-el.innerText+=text[i];
-i++;
-if(i>=text.length) clearInterval(interval);
-},15);
-}
 
-/* SEND */
+let i=0;
+
+let int=setInterval(()=>{
+
+el.innerText+=text[i];
+
+i++;
+
+if(i>=text.length)clearInterval(int);
+
+},15);
+
+}
 
 function send(){
 
-let input=document.getElementById("input");
-let text=input.value.trim();
+let text=input.value;
 
-if(!text) return;
+if(!text)return;
+
+if(currentChat==null)newChat();
 
 addMessage(text,"user");
 
-saveMemory(text);
+let reply=qa[text.toLowerCase()]||
 
-let reply=qa[text.toLowerCase()] ||
-"I understand your message. Complexity AI is designed to help intelligently.";
+"I understand your request. Complexity AI will respond professionally.";
 
 let bot=addMessage("","bot");
 
 typeText(bot,reply);
 
-input.value="";
-}
+chats[currentChat].push({text:reply,type:"bot"});
 
-input.addEventListener("keypress",e=>{
-if(e.key==="Enter") send();
-});
+saveChats();
+
+input.value="";
+
+}
 
 </script>
 
