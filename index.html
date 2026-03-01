@@ -1,6 +1,6 @@
 <script>
 
-const API_KEY = "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";
+const API_KEY = "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";
 
 /* CHAT STORAGE */
 let chats = JSON.parse(localStorage.getItem("complexity_chats") || "[]");
@@ -9,7 +9,9 @@ let currentChat = [];
 /* UPDATE SIDEBAR */
 function updateHistory(){
 
-let history = document.getElementById("history");
+const history = document.getElementById("history");
+
+if(!history) return;
 
 history.innerHTML = "";
 
@@ -45,7 +47,7 @@ function saveChat(){
 
 if(currentChat.length > 0){
 
-chats.push(currentChat);
+chats.push([...currentChat]);
 
 localStorage.setItem("complexity_chats",JSON.stringify(chats));
 
@@ -103,7 +105,7 @@ inputs:text
 
 const data = await response.json();
 
-let reply = data[0].generated_text;
+let reply = data[0].generated_text || "No response.";
 
 typeReply(typingDiv, reply);
 
@@ -169,8 +171,12 @@ return div;
 }
 
 /* INIT */
+document.addEventListener("DOMContentLoaded", function(){
+
 updateHistory();
 
 addMessage("Hello. I am COMPLEXITY AI BY DEAN. How can I help?","bot",false);
+
+});
 
 </script>
