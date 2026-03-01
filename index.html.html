@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Complexity AI by Dean Baksh</title>
+
+<style>
+
+/* THEMES */
+
+body.dark{
+--bg:#343541;
+--panel:#202123;
+--bot:#444654;
+--user:#10a37f;
+--text:white;
+}
+
+body.light{
+--bg:#ffffff;
+--panel:#f7f7f8;
+--bot:#e5e5e7;
+--user:#007aff;
+--text:black;
+}
+
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:Arial;
+display:flex;
+height:100vh;
+}
+
+/* LOGIN */
+
+#loginScreen{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:1000;
+}
+
+#loginScreen input{
+padding:10px;
+font-size:16px;
+margin:10px;
+}
+
+/* SIDEBAR */
+
+#sidebar{
+width:260px;
+background:var(--panel);
+padding:10px;
+overflow-y:auto;
+}
+
+.chatItem{
+background:var(--bot);
+padding:10px;
+margin:5px 0;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* MAIN */
+
+#main{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+/* HEADER */
+
+#header{
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px;
+background:var(--panel);
+}
+
+#logo{
+width:40px;
+height:40px;
+}
+
+/* CHAT */
+
+#chat{
+flex:1;
+overflow-y:auto;
+padding:15px;
+}
+
+.message{
+padding:12px;
+margin:10px;
+border-radius:10px;
+max-width:70%;
+white-space:pre-wrap;
+}
+
+.user{
+background:var(--user);
+margin-left:auto;
+}
+
+.bot{
+background:var(--bot);
+}
+
+/* INPUT */
+
+#inputArea{
+display:flex;
+padding:10px;
+background:var(--panel);
+}
+
+#input{
+flex:1;
+padding:10px;
+font-size:16px;
+}
+
+button{
+padding:10px;
+margin:3px;
+background:var(--user);
+color:white;
+border:none;
+cursor:pointer;
+}
+
+/* THINKING DOTS */
+
+.typing{
+background:var(--bot);
+padding:10px;
+border-radius:10px;
+display:inline-block;
+}
+
+.dot{
+width:6px;
+height:6px;
+background:white;
+border-radius:50%;
+display:inline-block;
+margin:3px;
+animation:blink 1.4s infinite;
+}
+
+.dot:nth-child(2){animation-delay:.2s;}
+.dot:nth-child(3){animation-delay:.4s;}
+
+@keyframes blink{
+0%{opacity:.2;}
+20%{opacity:1;}
+100%{opacity:.2;}
+}
+
+</style>
+</head>
+
+<body class="dark">
+
+<!-- LOGIN -->
+
+<div id="loginScreen">
+
+<h2>Login to Complexity AI</h2>
+
+<input id="username" placeholder="Enter username">
+
+<button onclick="login()">Login</button>
+
+</div>
+
+<!-- SIDEBAR -->
+
+<div id="sidebar">
+
+<button onclick="newChat()">New Chat</button>
+
+<button onclick="exportChat()">Export</button>
+
+<button onclick="deleteChat()">Delete</button>
+
+<button onclick="toggleTheme()">Dark / Light</button>
+
+<h3>Chats</h3>
+
+<div id="history"></div>
+
+</div>
+
+<!-- MAIN -->
+
+<div id="main">
+
+<div id="header">
+
+<img id="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...">
+
+<h2>Complexity AI by Dean Baksh</h2>
+
+</div>
+
+<div id="chat"></div>
+
+<div id="inputArea">
+
+<input id="input" placeholder="Ask Complexity AI...">
+
+<button onclick="send()">Send</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* USER */
+
+let user=null;
+
+function login(){
+
+let name=document.getElementById("username").value.trim();
+
+if(!name)return;
+
+user=name;
+
+localStorage.setItem("complexityUser",name);
+
+document.getElementById("loginScreen").style.display="none";
+
+loadChats();
+
+}
+
+window.onload=function(){
+
+let saved=localStorage.getItem("complexityUser");
+
+if(saved){
+
+user=saved;
+
+document.getElementById("loginScreen").style.display="none";
+
+loadChats();
+
+}
+
+};
+
+/* THEME */
+
+function toggleTheme(){
+
+let current=document.body.className;
+
+document.body.className=current==="dark"?"light":"dark";
+
+}
+
+/* CHAT STORAGE */
+
+let chats=[];
+
+let currentChat=null;
+
+function loadChats(){
+
+chats=JSON.parse(localStorage.getItem("chats_"+user)||"[]");
+
+renderChats();
+
+}
+
+function saveChats(){
+
+localStorage.setItem("chats_"+user,JSON.stringify(chats));
+
+}
+
+function renderChats(){
+
+history.innerHTML="";
+
+chats.forEach((c,i)=>{
+
+let div=document.createElement("div");
+
+div.className="chatItem";
+
+div.innerText="Chat "+(i+1);
+
+div.onclick=()=>loadChat(i);
+
+history.appendChild(div);
+
+});
+
+}
+
+function loadChat(i){
+
+currentChat=i;
+
+chat.innerHTML="";
+
+chats[i].forEach(m=>addMessage(m.text,m.type,false));
+
+}
+
+function newChat(){
+
+let c=[];
+
+chats.push(c);
+
+currentChat=chats.length-1;
+
+saveChats();
+
+renderChats();
+
+chat.innerHTML="";
+
+}
+
+function deleteChat(){
+
+if(currentChat==null)return;
+
+chats.splice(currentChat,1);
+
+currentChat=null;
+
+saveChats();
+
+renderChats();
+
+chat.innerHTML="";
+
+}
+
+function exportChat(){
+
+if(currentChat==null)return;
+
+let text=chats[currentChat]
+
+.map(m=>m.type+": "+m.text)
+
+.join("\n\n");
+
+let blob=new Blob([text]);
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="chat.txt";
+
+a.click();
+
+}
+
+/* ADD MESSAGE */
+
+function addMessage(text,type,save=true){
+
+let div=document.createElement("div");
+
+div.className="message "+type;
+
+div.textContent=text;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+if(save && currentChat!=null){
+
+chats[currentChat].push({text,type});
+
+saveChats();
+
+}
+
+return div;
+
+}
+
+/* TYPING */
+
+function typeMessage(el,text){
+
+el.textContent="";
+
+let i=0;
+
+function type(){
+
+if(i<text.length){
+
+el.textContent+=text[i];
+
+i++;
+
+setTimeout(type,15);
+
+}
+
+}
+
+type();
+
+}
+
+/* THINKING */
+
+function showThinking(){
+
+let div=document.createElement("div");
+
+div.className="typing";
+
+div.innerHTML="<span class='dot'></span><span class='dot'></span><span class='dot'></span>";
+
+chat.appendChild(div);
+
+return div;
+
+}
+
+/* AI */
+
+const qa={
+
+"hello":"Hello. I am Complexity AI by Dean Baksh. I am ready to assist you professionally.",
+
+"what is google":"Google is one of the world's most advanced technology companies, specialising in search, artificial intelligence, cloud computing, and digital services.",
+
+"who made you":"I was professionally created and developed by Dean Baksh.",
+
+"what is ai":"Artificial intelligence is advanced software capable of understanding, learning, and responding intelligently."
+
+};
+
+/* SEND */
+
+function send(){
+
+let text=input.value.trim();
+
+if(!text)return;
+
+if(currentChat==null)newChat();
+
+addMessage(text,"user");
+
+input.value="";
+
+let thinking=showThinking();
+
+setTimeout(()=>{
+
+thinking.remove();
+
+let reply=qa[text.toLowerCase()] ||
+
+"Complexity AI understands your message and provides intelligent assistance based on advanced programmed logic.";
+
+let bot=addMessage("","bot");
+
+typeMessage(bot,reply);
+
+},800);
+
+}
+
+input.addEventListener("keypress",e=>{
+
+if(e.key==="Enter")send();
+
+});
+
+</script>
+
+</body>
+</html>
