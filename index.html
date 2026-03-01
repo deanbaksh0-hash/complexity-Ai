@@ -83,7 +83,7 @@ flex-direction:column;
 #header{
 display:flex;
 align-items:center;
-gap:10px;
+gap:12px;
 padding:10px;
 background:var(--panel);
 }
@@ -91,6 +91,22 @@ background:var(--panel);
 #logo{
 width:40px;
 height:40px;
+object-fit:contain;
+}
+
+#titleArea{
+display:flex;
+flex-direction:column;
+}
+
+#title{
+font-size:18px;
+font-weight:bold;
+}
+
+#subtitle{
+font-size:12px;
+opacity:0.7;
 }
 
 /* CHAT */
@@ -107,6 +123,7 @@ margin:10px;
 border-radius:10px;
 max-width:70%;
 white-space:pre-wrap;
+line-height:1.5;
 }
 
 .user{
@@ -139,6 +156,7 @@ background:var(--user);
 color:white;
 border:none;
 cursor:pointer;
+border-radius:6px;
 }
 
 /* THINKING DOTS */
@@ -210,9 +228,13 @@ animation:blink 1.4s infinite;
 
 <div id="header">
 
-<img id="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...">
+<!-- THIS LOADS logo.png FROM SAME FOLDER -->
+<img src="logo.png" id="logo">
 
-<h2>Complexity AI by Dean Baksh</h2>
+<div id="titleArea">
+<div id="title">Complexity AI</div>
+<div id="subtitle">by Dean Baksh</div>
+</div>
 
 </div>
 
@@ -270,16 +292,14 @@ loadChats();
 
 function toggleTheme(){
 
-let current=document.body.className;
-
-document.body.className=current==="dark"?"light":"dark";
+document.body.className=
+document.body.className==="dark"?"light":"dark";
 
 }
 
 /* CHAT STORAGE */
 
 let chats=[];
-
 let currentChat=null;
 
 function loadChats(){
@@ -363,9 +383,7 @@ function exportChat(){
 if(currentChat==null)return;
 
 let text=chats[currentChat]
-
 .map(m=>m.type+": "+m.text)
-
 .join("\n\n");
 
 let blob=new Blob([text]);
@@ -440,7 +458,10 @@ let div=document.createElement("div");
 
 div.className="typing";
 
-div.innerHTML="<span class='dot'></span><span class='dot'></span><span class='dot'></span>";
+div.innerHTML=
+"<span class='dot'></span>"+
+"<span class='dot'></span>"+
+"<span class='dot'></span>";
 
 chat.appendChild(div);
 
@@ -482,8 +503,8 @@ setTimeout(()=>{
 
 thinking.remove();
 
-let reply=qa[text.toLowerCase()] ||
-
+let reply=
+qa[text.toLowerCase()] ||
 "Complexity AI understands your message and provides intelligent assistance based on advanced programmed logic.";
 
 let bot=addMessage("","bot");
