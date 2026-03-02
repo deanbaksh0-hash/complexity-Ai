@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Complexity AI by Dean</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 
-/* THEME */
+/* CHATGPT STYLE COLORS */
 
 :root{
 --bg:#343541;
@@ -15,7 +14,6 @@
 --bot:#444654;
 --user:#10A37F;
 --text:#ECECF1;
---accent:#10A37F;
 }
 
 .light{
@@ -48,22 +46,21 @@ display:flex;
 justify-content:center;
 align-items:center;
 flex-direction:column;
-z-index:100;
+z-index:999;
 }
 
 #loginScreen input{
 padding:12px;
-margin:6px;
+margin:5px;
 width:220px;
-font-size:16px;
 }
 
 #loginScreen button{
 padding:12px;
 width:220px;
-background:var(--accent);
-color:white;
+background:#10A37F;
 border:none;
+color:white;
 cursor:pointer;
 }
 
@@ -93,10 +90,10 @@ background:#2A2B32;
 }
 
 .sidebar button{
-margin:6px;
+margin:5px;
 padding:10px;
 border:none;
-background:var(--accent);
+background:#10A37F;
 color:white;
 cursor:pointer;
 }
@@ -111,12 +108,12 @@ flex-direction:column;
 
 /* CHAT */
 
-.chat{
+#chat{
 flex:1;
 overflow-y:auto;
 }
 
-.msg{
+.message{
 padding:15px;
 white-space:pre-wrap;
 }
@@ -145,7 +142,7 @@ font-size:16px;
 
 .sendBtn{
 padding:12px;
-background:var(--accent);
+background:#10A37F;
 color:white;
 border:none;
 cursor:pointer;
@@ -167,13 +164,13 @@ display:inline-block;
 animation:blink 1.4s infinite;
 }
 
-.dot:nth-child(2){animation-delay:0.2s;}
-.dot:nth-child(3){animation-delay:0.4s;}
+.dot:nth-child(2){animation-delay:.2s;}
+.dot:nth-child(3){animation-delay:.4s;}
 
 @keyframes blink{
-0%{opacity:0.2;}
+0%{opacity:.2;}
 20%{opacity:1;}
-100%{opacity:0.2;}
+100%{opacity:.2;}
 }
 
 </style>
@@ -190,7 +187,7 @@ animation:blink 1.4s infinite;
 
 <input id="password" type="password" placeholder="Password">
 
-<button id="loginBtn">Login</button>
+<button onclick="login()">Login</button>
 
 </div>
 
@@ -205,8 +202,7 @@ animation:blink 1.4s infinite;
 <div class="chatBtn" onclick="switchChat(2)">Chat 3</div>
 
 <button onclick="deleteChat()">Delete</button>
-<button onclick="exportChat()">Export</button>
-<button onclick="toggleTheme()">Dark / Light</button>
+<button onclick="toggleTheme()">Light / Dark</button>
 
 </div>
 
@@ -214,11 +210,11 @@ animation:blink 1.4s infinite;
 
 <div class="main">
 
-<div id="chat" class="chat"></div>
+<div id="chat"></div>
 
 <div class="inputArea">
 
-<input id="input" placeholder="Send a message">
+<input id="input" placeholder="Send message">
 
 <button class="sendBtn" onclick="send()">Send</button>
 
@@ -228,26 +224,17 @@ animation:blink 1.4s infinite;
 
 <script>
 
-/* USER */
+/* LOGIN */
 
 let currentUser=null;
 
-/* LOGIN ELEMENTS */
-
-const loginScreen=document.getElementById("loginScreen");
-const loginBtn=document.getElementById("loginBtn");
-
-loginBtn.addEventListener("click", login);
-
-/* LOGIN FUNCTION */
-
 function login(){
 
-const user=document.getElementById("username").value.trim();
-const pass=document.getElementById("password").value.trim();
+let user=document.getElementById("username").value.trim();
+let pass=document.getElementById("password").value.trim();
 
-if(user==="" || pass===""){
-alert("Enter username and password");
+if(user==""||pass==""){
+alert("Enter login");
 return;
 }
 
@@ -255,10 +242,9 @@ currentUser=user;
 
 localStorage.setItem("complexityUser",user);
 
-loginScreen.style.display="none";
+document.getElementById("loginScreen").style.display="none";
 
 loadMemory();
-
 render();
 
 }
@@ -267,16 +253,15 @@ render();
 
 window.onload=function(){
 
-const saved=localStorage.getItem("complexityUser");
+let saved=localStorage.getItem("complexityUser");
 
 if(saved){
 
 currentUser=saved;
 
-loginScreen.style.display="none";
+document.getElementById("loginScreen").style.display="none";
 
 loadMemory();
-
 render();
 
 }
@@ -312,7 +297,6 @@ if(data) chats=JSON.parse(data);
 function switchChat(id){
 
 currentChat=id;
-
 render();
 
 }
@@ -337,7 +321,7 @@ function addMessage(text,type,save=true){
 
 let div=document.createElement("div");
 
-div.className="msg "+type;
+div.className="message "+type;
 
 div.textContent=text;
 
@@ -363,7 +347,7 @@ function thinking(){
 
 let div=document.createElement("div");
 
-div.className="msg bot";
+div.className="message bot";
 
 div.innerHTML=
 '<div class="typing">'+
@@ -378,7 +362,7 @@ return div;
 
 }
 
-/* TYPE ANIMATION */
+/* TYPE */
 
 function type(el,text){
 
@@ -396,7 +380,7 @@ if(i>=text.length) clearInterval(interval);
 
 }
 
-/* PRECODED AI */
+/* PRECODED ANSWERS */
 
 function getReply(q){
 
@@ -404,270 +388,15 @@ q=q.toLowerCase();
 
 const answers={
 
-"hello":"Hello. I am Complexity AI by Dean Baksh. How may I assist you today?",
-"hi":"Hello. It is a pleasure to assist you. What would you like to know?",
-"who are you":"I am Complexity AI by Dean Baksh, an intelligent assistant designed to provide professional and accurate responses.",
-"who made you":"I was designed and developed by Dean Baksh as part of the Complexity AI system.",
-"what can you do":"I can answer questions, assist with learning, provide explanations, and support you with technology and general knowledge.",
-"how are you":"I am functioning optimally and ready to assist you.",
-"what is ai":"Artificial intelligence is software designed to simulate intelligent human thinking and decision-making.",
-"what is artificial intelligence":"Artificial intelligence is a field of computer science focused on building systems capable of intelligent behaviour.",
-"what is machine learning":"Machine learning is a type of AI that allows systems to learn from data and improve over time.",
-"what is deep learning":"Deep learning is an advanced form of machine learning using neural networks to process complex information.",
-"what is google":"Google is a global technology company specialising in search, artificial intelligence, and cloud computing.",
-"what is microsoft":"Microsoft is a major technology company known for Windows, Office, and cloud computing services.",
-"what is apple":"Apple is a technology company known for products like the iPhone, Mac, and iPad.",
-"what is amazon":"Amazon is a global company specialising in e-commerce, cloud computing, and artificial intelligence.",
-"what is a computer":"A computer is an electronic machine that processes data and performs tasks using programmed instructions.",
-"what is software":"Software is a set of instructions that tells a computer how to perform tasks.",
-"what is hardware":"Hardware refers to the physical parts of a computer system.",
-"what is the internet":"The internet is a global network connecting billions of devices.",
-"what is coding":"Coding is writing instructions for computers using programming languages.",
-"what is programming":"Programming is the process of creating software using code.",
-"what is html":"HTML is the language used to structure web pages.",
-"what is css":"CSS is used to design and style web pages.",
-"what is javascript":"JavaScript is used to make websites interactive.",
-"what is python":"Python is a popular programming language used in AI and software development.",
-"what is java":"Java is a widely used programming language for applications and systems.",
-"what is a website":"A website is a collection of web pages accessible online.",
-"what is a server":"A server provides data and services to other computers.",
-"what is cloud computing":"Cloud computing provides storage and services over the internet.",
-"what is a chatbot":"A chatbot is software that simulates human conversation.",
-"what is chatgpt":"ChatGPT is an AI designed to generate human-like responses.",
-"what is technology":"Technology is the use of science to create useful tools and systems.",
-"what is innovation":"Innovation is creating new and improved solutions.",
-"what is cybersecurity":"Cybersecurity protects systems from digital threats.",
-"what is encryption":"Encryption protects data by converting it into secure form.",
-"what is data":"Data is information processed by computers.",
-"what is memory":"Memory stores data for computer use.",
-"what is ram":"RAM stores temporary data for active programs.",
-"what is storage":"Storage keeps data permanently.",
-"what is cpu":"The CPU processes instructions and runs programs.",
-"what is gpu":"The GPU processes graphics and visuals.",
-"what is wifi":"WiFi provides wireless internet access.",
-"what is bluetooth":"Bluetooth connects devices wirelessly.",
-"what is a browser":"A browser allows users to access websites.",
-"what is chrome":"Chrome is a web browser developed by Google.",
-"what is edge":"Edge is a web browser developed by Microsoft.",
-"what is firefox":"Firefox is a privacy-focused web browser.",
-"what is safari":"Safari is Apple's web browser.",
-"what is an app":"An app is software designed for specific tasks.",
-"what is android":"Android is a mobile operating system.",
-"what is ios":"iOS is Apple's mobile operating system.",
-"what is windows":"Windows is Microsoft's operating system.",
-"what is linux":"Linux is an open-source operating system.",
-"what is macos":"macOS is Apple's computer operating system.",
-"what is a domain":"A domain is a website address.",
-"what is hosting":"Hosting stores websites online.",
-"what is github":"GitHub is a platform for storing and managing code.",
-"what is git":"Git is a version control system.",
-"what is debugging":"Debugging fixes code errors.",
-"what is ai assistant":"An AI assistant helps users using artificial intelligence.",
-"what is automation":"Automation allows systems to operate automatically.",
-"what is robotics":"Robotics involves creating intelligent machines.",
-"what is science":"Science studies the natural world.",
-"what is physics":"Physics studies matter and energy.",
-"what is chemistry":"Chemistry studies substances.",
-"what is biology":"Biology studies living organisms.",
-"what is math":"Mathematics studies numbers and logic.",
-"what is engineering":"Engineering applies science to solve problems.",
-"what is electricity":"Electricity is energy from charged particles.",
-"what is energy":"Energy is the ability to do work.",
-"what is intelligence":"Intelligence is the ability to learn and think.",
-"what is logic":"Logic is structured reasoning.",
-"what is problem solving":"Problem solving involves resolving challenges.",
-"what is success":"Success is achieving desired goals.",
-"what is productivity":"Productivity is efficiency in completing tasks.",
-"what is efficiency":"Efficiency is achieving maximum output with minimal waste.",
-"what is future technology":"Future technology involves advanced innovation.",
-"what is ai future":"The future of AI includes intelligent automation.",
-"what is neural network":"Neural networks simulate brain-like learning.",
-"what is digital technology":"Digital technology processes electronic data.",
-"what is computing":"Computing processes information digitally.",
-"what is system":"A system is a connected structure of components.",
-"what is network":"A network connects devices.",
-"what is connection":"A connection links systems.",
-"what is security":"Security protects systems.",
-"what is online privacy":"Online privacy protects personal information.",
-"what is authentication":"Authentication verifies identity.",
-"what is verification":"Verification confirms accuracy.",
-"what is database":"A database stores organised data.",
-"what is algorithm":"An algorithm is a problem-solving process.",
-"what is ai model":"An AI model processes and generates responses.",
-"what is digital innovation":"Digital innovation creates new solutions.",
-"what is smart technology":"Smart technology uses intelligent automation.",
-
-"what is complexity ai":"Complexity AI by Dean Baksh is an intelligent assistant designed for professional interaction.",
-
-"can you help me":"Yes. I am designed to assist you professionally.",
-"are you real":"I am an artificial intelligence system.",
-"are you smart":"I am designed to provide intelligent responses.",
-"can you learn":"My knowledge improves through updates.",
-"can you think":"I simulate thinking using intelligent programming.",
-"can you answer questions":"Yes. That is one of my main functions.",
-"can you code":"Yes. I can assist with coding.",
-"can you explain things":"Yes. I provide clear explanations.",
-"can you help with homework":"Yes. I can assist with educational topics.",
-"can you help with programming":"Yes. I support programming assistance.",
-
-"what is time":"Time is the measurement of events.",
-"what is space":"Space is the universe beyond Earth.",
-"what is gravity":"Gravity is a force attracting objects.",
-"what is earth":"Earth is our home planet.",
-"what is sun":"The Sun is the star at the center of our solar system.",
-"what is moon":"The Moon is Earth's natural satellite.",
-
-"what is innovation in ai":"AI innovation improves intelligent systems.",
-"what is modern technology":"Modern technology refers to advanced tools.",
-"what is digital future":"The digital future involves intelligent systems.",
-"what is advanced computing":"Advanced computing uses powerful systems.",
-
-"why is technology important":"Technology improves efficiency and capability.",
-"why is ai important":"AI enhances automation and intelligence.",
-"why is coding important":"Coding enables software creation.",
-
-"how does ai work":"AI works using algorithms and data.",
-"how does internet work":"The internet connects systems globally.",
-"how does computer work":"Computers process instructions electronically.",
-
-"what is knowledge":"Knowledge is information and understanding.",
-"what is information":"Information is processed data.",
-"what is digital system":"Digital systems process electronic data.",
-
-"what is innovation technology":"Innovation technology creates improvements.",
-"what is ai assistant system":"An AI assistant provides intelligent help.",
-
-"what is dean baksh":"Dean Baksh is the creator of Complexity AI.",
-
-"who is dean baksh":"Dean Baksh is the developer of Complexity AI.",
-
-"what is future":"The future represents events yet to occur.",
-
-"what is digital intelligence":"Digital intelligence involves smart systems.",
-
-"what is computer intelligence":"Computer intelligence enables automated thinking.",
-
-"what is advanced ai":"Advanced AI performs complex reasoning.",
-
-"what is intelligent system":"An intelligent system responds intelligently.",
-
-"what is smart system":"A smart system uses intelligent automation.",
-
-"what is innovation future":"Future innovation includes advanced technology.",
-
-"what is automation technology":"Automation technology performs tasks automatically.",
-
-"what is modern ai":"Modern AI uses machine learning and neural networks.",
-
-"what is ai software":"AI software simulates intelligent behaviour.",
-
-"what is ai assistant software":"AI assistant software helps users intelligently.",
-
-"what is performance":"Performance measures efficiency.",
-
-"what is speed":"Speed measures how fast something operates.",
-
-"what is digital world":"The digital world involves computer systems.",
-
-"what is computing system":"A computing system processes information.",
-
-"what is intelligent computing":"Intelligent computing combines AI and processing.",
-
-"what is digital security":"Digital security protects online data.",
-
-"what is internet technology":"Internet technology enables global communication.",
-
-"what is ai technology":"AI technology enables intelligent automation.",
-
-"what is computer system":"A computer system processes information.",
-
-"what is ai future technology":"Future AI involves advanced intelligence.",
-
-"what is professional ai":"Professional AI provides accurate responses.",
-
-"what is digital transformation":"Digital transformation integrates technology.",
-
-"what is online system":"Online systems operate over the internet.",
-
-"what is computer future":"Future computers will be more powerful.",
-
-"what is ai future system":"Future AI systems will be highly intelligent.",
-
-"what is smart future":"Smart futures involve advanced automation.",
-
-"what is intelligent future":"The intelligent future involves AI-driven systems.",
-
-"what is ai innovation":"AI innovation improves intelligence.",
-
-"what is computing future":"Computing future involves advanced processing.",
-
-"what is advanced system":"Advanced systems provide superior performance.",
-
-"what is intelligent automation":"Intelligent automation uses AI to perform tasks.",
-
-"what is ai assistant future":"Future AI assistants will be highly advanced.",
-
-"what is technology future":"Technology future includes advanced systems.",
-
-"what is smart computing":"Smart computing involves intelligent processing.",
-
-"what is ai intelligence":"AI intelligence refers to simulated thinking.",
-
-"what is complexity":"Complexity refers to interconnected systems.",
-
-"what is digital system future":"Future digital systems will be more intelligent.",
-
-"what is ai response":"An AI response is generated intelligently.",
-
-"what is ai program":"An AI program performs intelligent tasks.",
-
-"what is ai system future":"Future AI systems will improve significantly.",
-
-"what is intelligent technology":"Intelligent technology uses AI capabilities.",
-
-"what is computing intelligence":"Computing intelligence enables smart behaviour.",
-
-"what is ai assistant future system":"Future assistants will be highly capable.",
-
-"what is advanced intelligence":"Advanced intelligence involves complex reasoning.",
-
-"what is ai logic":"AI logic processes structured reasoning.",
-
-"what is ai communication":"AI communication simulates human interaction.",
-
-"what is ai capability":"AI capability refers to intelligent functionality.",
-
-"what is ai development":"AI development creates intelligent systems.",
-
-"what is ai engineering":"AI engineering designs intelligent solutions.",
-
-"what is ai assistant intelligence":"AI assistant intelligence enables smart help.",
-
-"what is ai response system":"AI response systems generate replies intelligently."
-"hello":"Hello. I am Complexity AI by Dean Baksh. How can I assist you today?",
-
-"what is ai":"Artificial intelligence is advanced software capable of intelligent reasoning and communication.",
-
-"what is google":"Google is a global technology company specialising in search, cloud computing, and artificial intelligence.",
-
-"who made you":"I was created by Dean Baksh."
-"hello":"Hello. I am Complexity AI by Dean. How can I help you?",
-
-"hi":"Hello. How can I assist you?",
-
-"who are you":"I am Complexity AI created by Dean.",
-
-"what is google":"Google is a global technology company providing search, AI, and online services.",
-
-"what is ai":"Artificial intelligence is software that simulates intelligent behavior.",
-
-"who made you":"I was created by Dean.",
-
-"default":"This is a precoded response from Complexity AI."
+"what is google":
+"Google is a global technology company specializing in search, artificial intelligence, and online services.",
+
+"default":
+"This is a precoded response from Complexity AI by Dean."
 
 };
 
-return answers[q] || answers["default"];
+return answers[q]||answers["default"];
 
 }
 
@@ -679,7 +408,7 @@ let input=document.getElementById("input");
 
 let text=input.value.trim();
 
-if(text==="") return;
+if(text=="") return;
 
 addMessage(text,"user");
 
@@ -693,7 +422,7 @@ t.remove();
 
 let reply=getReply(text);
 
-let bot=addMessage("","bot");
+let bot=addMessage("", "bot");
 
 type(bot,reply);
 
@@ -710,26 +439,6 @@ chats[currentChat]=[];
 render();
 
 saveMemory();
-
-}
-
-/* EXPORT */
-
-function exportChat(){
-
-let text=chats[currentChat]
-.map(m=>m.type+": "+m.text)
-.join("\n");
-
-let blob=new Blob([text]);
-
-let a=document.createElement("a");
-
-a.href=URL.createObjectURL(blob);
-
-a.download="chat.txt";
-
-a.click();
 
 }
 
